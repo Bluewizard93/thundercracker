@@ -98,7 +98,9 @@ let isCall = 1, Defs = [R0, R1] in {
         "s.callr\t$Rs", [(SVMCall GPReg:$Rs)]>;
 
     def SYS64_CALL : S_call<(outs), (ins i32imm:$imm6),
-        "s.sys\t$imm6", [(SVMSys64Call imm:$imm6)]>; 
+        "s.sys\t$imm6", [(SVMSys64Call imm:$imm6)]> {
+        let hasSideEffects = 1;
+    }
 
     let isReturn = 1, isTerminator = 1 in {
 
@@ -111,7 +113,9 @@ let isCall = 1, Defs = [R0, R1] in {
 }
 
 // Convert llvm.trap() to a _SYS_abort()
-def : Pat<(trap), (SYS64_CALL 0)>;
+def : Pat<(trap), (SYS64_CALL 0)> {
+    //let hasSideEffects = 1;
+}
 
 /****************************************************************
  * Control Flow
@@ -187,7 +191,8 @@ def MOVSr : T1<(outs GPReg:$Rd), (ins GPReg:$Rs),
     "movs\t$Rd, $Rs", []> {
     let opB = 0;
     let offset5 = 0;
-    let neverHasSideEffects = 1;
+    //let neverHasSideEffects = 1;
+    let hasSideEffects = 0;
 }
 
 def LSLi5 : T1<(outs GPReg:$Rd), (ins GPReg:$Rs, i32imm:$offset5),
@@ -372,7 +377,8 @@ def MVNr : T4<(outs GPReg:$Rs), (ins GPReg:$Rn),
 def MOVr : T5<0b10, (outs GPReg:$Rd), (ins GPReg:$Rs),
     "mov\t$Rd, $Rs", []> {
     // Does not affect CPSR.
-    let neverHasSideEffects = 1;
+    //let neverHasSideEffects = 1;
+    let hasSideEffects = 0;
 }
 
 // 32-bit data processing instructions

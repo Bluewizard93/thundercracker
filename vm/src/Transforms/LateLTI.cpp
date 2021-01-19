@@ -28,31 +28,31 @@
 #include "Transforms/MetadataTransform.h"
 #include "Support/ErrorReporter.h"
 #include "llvm/Pass.h"
-#include "llvm/Module.h"
-#include "llvm/Constants.h"
-#include "llvm/Type.h"
-#include "llvm/LLVMContext.h"
-#include "llvm/Instructions.h"
-#include "llvm/Target/TargetData.h"
-#include "llvm/Support/CallSite.h"
-#include "llvm/Support/IRBuilder.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Constants.h"
+#include "llvm/IR/Type.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/Instructions.h"
+#include "llvm/Target/TargetOptions.h"
+#include "llvm/IR/CallSite.h"
+#include "llvm/IR/IRBuilder.h"
 #include "llvm/Analysis/ValueTracking.h"
 using namespace llvm;
 
 namespace llvm {
-    BasicBlockPass *createLateLTIPass();
+    FunctionPass *createLateLTIPass();
 }
 
 namespace {
-    class LateLTIPass : public BasicBlockPass {
+    class LateLTIPass : public FunctionPass {
     public:
         static char ID;
         LateLTIPass()
-            : BasicBlockPass(ID) {}
+            : FunctionPass(ID) {}
 
-        virtual bool runOnBasicBlock (BasicBlock &BB);
+        virtual bool runOnFunction (BasicBlock &BB);
 
-        virtual const char *getPassName() const {
+        virtual llvm::StringRef getPassName() const {
             return "Late link-time intrinsics";
         }
         
@@ -64,12 +64,12 @@ namespace {
 
 char LateLTIPass::ID = 0;
 
-BasicBlockPass *llvm::createLateLTIPass()
+FunctionPass *llvm::createLateLTIPass()
 {
     return new LateLTIPass();
 }
 
-bool LateLTIPass::runOnBasicBlock (BasicBlock &BB)
+bool LateLTIPass::runOnFunction (BasicBlock &BB)
 {
     bool Changed = false;
 

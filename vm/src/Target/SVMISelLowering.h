@@ -27,7 +27,7 @@
 #ifndef SVM_ISELLOWERING_H
 #define SVM_ISELLOWERING_H
 
-#include "llvm/Target/TargetLowering.h"
+#include "llvm/CodeGen/TargetLowering.h"
 #include "SVM.h"
 
 namespace llvm {
@@ -57,7 +57,7 @@ namespace llvm {
         virtual const char *getTargetNodeName(unsigned Opcode) const;
 
         virtual MachineBasicBlock *
-          EmitInstrWithCustomInserter(MachineInstr *MI,
+          EmitInstrWithCustomInserter(MachineInstr &MI,
                                       MachineBasicBlock *BB) const;
 
         virtual SDValue LowerOperation(SDValue Op, SelectionDAG &DAG) const;
@@ -67,19 +67,13 @@ namespace llvm {
                                CallingConv::ID CallConv,
                                bool isVarArg,
                                const SmallVectorImpl<ISD::InputArg> &Ins,
-                               DebugLoc dl, SelectionDAG &DAG,
+                               const SDLoc &dl, SelectionDAG &DAG,
                                SmallVectorImpl<SDValue> &InVals) const;
 
         virtual SDValue
-          LowerCall(SDValue Chain, SDValue Callee,
-                    CallingConv::ID CallConv, bool isVarArg,
-                    bool &isTailCall,
-                    const SmallVectorImpl<ISD::OutputArg> &Outs,
-                    const SmallVectorImpl<SDValue> &OutVals,
-                    const SmallVectorImpl<ISD::InputArg> &Ins,
-                    DebugLoc dl, SelectionDAG &DAG,
-                    SmallVectorImpl<SDValue> &InVals) const;
-                    
+          LowerCall(CallLoweringInfo &/*CLI*/,
+                                  SmallVectorImpl<SDValue> &/*InVals*/) const; 
+
         virtual SDValue
           LowerCallResult(SDValue Chain, SDValue Glue,
                           CallingConv::ID CallConv, bool isVarArg,
@@ -92,7 +86,7 @@ namespace llvm {
                       CallingConv::ID CallConv, bool isVarArg,
                       const SmallVectorImpl<ISD::OutputArg> &Outs,
                       const SmallVectorImpl<SDValue> &OutVals,
-                      DebugLoc dl, SelectionDAG &DAG) const;
+                      const SDLoc &dl, SelectionDAG &DAG) const;
                       
     private:
         // Custom lowering

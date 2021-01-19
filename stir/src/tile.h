@@ -30,9 +30,9 @@
 #include <stdint.h>
 #include <float.h>
 #include <string.h>
-#include <tr1/memory>
-#include <tr1/unordered_set>
-#include <tr1/unordered_map>
+#include <memory>
+#include <unordered_set>
+#include <unordered_map>
 
 #include "color.h"
 #include "logger.h"
@@ -41,7 +41,7 @@ namespace Stir {
 
 class Tile;
 class TileStack;
-typedef std::tr1::shared_ptr<Tile> TileRef;
+typedef std::shared_ptr<Tile> TileRef;
 
 
 /*
@@ -194,7 +194,7 @@ class Tile {
  private:
     Tile(const Identity &id);
 
-    static std::tr1::unordered_map<Identity, TileRef> instances;
+    static std::unordered_map<Identity, TileRef> instances;
     
     void constructPalette();
     void constructSobel();
@@ -349,7 +349,7 @@ class TilePool {
     void optimizeTiles(Logger &log);
     void optimizeTrueColorTiles(Logger &log);
     void optimizeTilesPass(Logger &log,
-                           std::tr1::unordered_set<TileStack *> &activeStacks,
+                           std::unordered_set<TileStack *> &activeStacks,
                            bool gather, bool pinned);
 
     TileStack *closest(TileRef t, double distance);

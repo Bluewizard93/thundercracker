@@ -288,7 +288,8 @@ class T32_LDSTbase<bits<7> op2v, bits<3> bpReg, dag outs, dag ins, string asmstr
     let secondWord{14-12} = Rt;
     let secondWord{11-0} = offset12;
     
-    let neverHasSideEffects = 1;
+    //let neverHasSideEffects = 1;
+    let hasSideEffects = 0;
 
     // Not marked rematerializable, LD/ST is expensive relative to spilling.
     let isReMaterializable = 0;
@@ -399,7 +400,8 @@ class S_ptr<dag outs, dag ins, string asmstr>
     let value8{2-0} = Rs;
     
     let isReMaterializable = 1;
-    let neverHasSideEffects = 1;
+    //let neverHasSideEffects = 1;
+    let hasSideEffects = 0;
 }
 
 class S_callr<bits<1> tail, dag outs, dag ins, string asmstr, list<dag> pattern>

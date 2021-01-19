@@ -67,7 +67,7 @@ void CubeSlot::connect(SysLFS::Key cubeRecord, const RadioAddress &addr, const R
     this->cubeRecord = cubeRecord;
 
     LOG(("CUBE[%d]: Connected to system. "
-        "record=%02x addr=%02x/%02x%02x%02x%02x%02x hwid=%016"PRIx64"\n",
+        "record=%02x addr=%02x/%02x%02x%02x%02x%02x hwid=%016" PRIx64 "\n",
         id(), cubeRecord, addr.channel, addr.id[0], addr.id[1], addr.id[2], addr.id[3],
         addr.id[4], getHWID()));
 

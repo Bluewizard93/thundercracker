@@ -6,7 +6,7 @@ BIN := slinky
 all: $(BIN_DIR)/$(BIN)$(BIN_EXT)
 
 INCLUDES += -Isrc
-FLAGS += -g
+FLAGS += -g 
 WARNFLAGS := -Werror -Wall -Wno-uninitialized
 
 # ABI header
@@ -21,8 +21,10 @@ DEPFILES := $(OBJS:.o=.d)
 FLAGS += -DSDK_VERSION=$(shell git describe --tags)
 
 # LLVM
+#FLAGS += -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS
 FLAGS += -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS
-CCFLAGS += -fno-rtti
+CCFLAGS += -fno-rtti -std=c++17 -stdlib=libc++ -Wfatal-errors
+CFLAGS += -std=c11 -stdlib=libc++ 
 INCLUDES += -I$(LLVM_INC)
 LIBS += \
 	$(LLVM_LIB)/libLLVMInstCombine.a \
@@ -62,6 +64,10 @@ ifeq ($(BUILD_PLATFORM), Linux)
     LIBS += -luuid
 endif
 
+ifeq ($(BUILD_PLATFORM), Darwin)
+	LIBS += -framework CoreServices -v 
+endif
+
 # The DEBUG-ness of this build must match what LLVM was compiled with.
 # Our libraries in deps are release builds, but if you want to set LLVM_LIB
 # yourself, you can turn debugging back on.
@@ -83,7 +89,8 @@ LDFLAGS += $(FLAGS) $(LIBS) $(LIB_STDCPP)
 
 # Symbol table trimming
 ifeq ($(BUILD_PLATFORM), Darwin)
-	LDFLAGS += -Xlinker -unexported_symbol -Xlinker "*"
+	#LDFLAGS += -Xlinker -unexported_symbol -Xlinker "*"
+	LDFLAGS += -unexported_symbol 
 endif
 
 # Disable implicit rules. Speeds up make, especially on Windows.

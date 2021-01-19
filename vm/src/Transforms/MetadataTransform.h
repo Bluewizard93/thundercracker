@@ -32,9 +32,9 @@
 namespace llvm {
     
     class CallSite;
-    class TargetData;
+    class DataLayout;
 
-    void MetadataTransform(CallSite &CS, const TargetData *TD);
+    void MetadataTransform(CallSite &CS, const DataLayout *TD);
 
 };
 

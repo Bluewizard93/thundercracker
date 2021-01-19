@@ -28,14 +28,14 @@
 #define SVM_FRAMEINFO_H
 
 #include "SVM.h"
-#include "llvm/Target/TargetFrameLowering.h"
+#include "llvm/CodeGen/TargetFrameLowering.h"
 
 namespace llvm {
 
 class SVMFrameLowering : public TargetFrameLowering {
 public:
     SVMFrameLowering();
-    void emitPrologue(MachineFunction &MF) const;
+    void emitPrologue(MachineFunction &MF, MachineBasicBlock &MBB) const;
     void emitEpilogue(MachineFunction &MF, MachineBasicBlock &MBB) const;
     bool hasFP(const llvm::MachineFunction&) const;
 };

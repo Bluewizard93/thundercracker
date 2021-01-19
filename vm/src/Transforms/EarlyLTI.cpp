@@ -30,17 +30,17 @@
 #include "Target/SVMSymbolDecoration.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/Pass.h"
-#include "llvm/Module.h"
-#include "llvm/Constants.h"
-#include "llvm/Type.h"
-#include "llvm/LLVMContext.h"
-#include "llvm/Instructions.h"
-#include "llvm/Support/CallSite.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Constants.h"
+#include "llvm/IR/Type.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/Instructions.h"
+#include "llvm/IR/CallSite.h"
 #include "llvm/Support/CommandLine.h"
 using namespace llvm;
 
 namespace llvm {
-    BasicBlockPass *createEarlyLTIPass();
+    BasicBlock *createEarlyLTIPass();
 }
 
 extern cl::opt<bool> ELFDebug;

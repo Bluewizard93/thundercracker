@@ -53,7 +53,8 @@ FLAGS += -O3 -g
 FLAGS += -DSDK_VERSION=$(shell git describe --tags)
 
 CFLAGS += $(FLAGS) -ffast-math -Werror -Wall $(INCLUDES) -I$(FIRMWARE_INC) -I$(SYS_INC) -MMD
-LDFLAGS += $(FLAGS) -lm -lstdc++
+#LDFLAGS += $(FLAGS) -lm -lstdc++
+LDFLAGS += $(FLAGS) -lm -stdlib=libc++
 CCFLAGS := $(CFLAGS)
 
 # Symbol table trimming

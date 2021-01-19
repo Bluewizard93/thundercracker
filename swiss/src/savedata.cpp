@@ -138,7 +138,9 @@ int SaveData::extract(const char *pkgStr, const char *filepath, bool raw, bool r
      * the input to normalize(), and remove it when we're done.
      */
 
+    //TODO: This isn't secure and needs corrected
     const char *rawfilepath = raw ? filepath : tmpnam(0);
+    //const char *rawfilepath = raw ? filepath : mkstemp(0);
 
     FILE *fraw = fopen(rawfilepath, "wb");
     if (!fraw) {

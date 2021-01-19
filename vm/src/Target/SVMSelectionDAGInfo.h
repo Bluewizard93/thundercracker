@@ -27,13 +27,13 @@
 #ifndef SVM_SELECTIONDAGINFO_H
 #define SVM_SELECTIONDAGINFO_H
 
-#include "llvm/Target/TargetSelectionDAGInfo.h"
+#include "llvm/CodeGen/SelectionDAGTargetInfo.h"
 
 namespace llvm {
 
 class SVMTargetMachine;
 
-class SVMSelectionDAGInfo : public TargetSelectionDAGInfo {
+class SVMSelectionDAGInfo : public SelectionDAGTargetInfo {
 public:
     explicit SVMSelectionDAGInfo(const SVMTargetMachine &TM);
     ~SVMSelectionDAGInfo();

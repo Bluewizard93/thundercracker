@@ -27,7 +27,7 @@
 #ifndef SVMINSTRUCTIONINFO_H
 #define SVMINSTRUCTIONINFO_H
 
-#include "llvm/Target/TargetInstrInfo.h"
+#include "llvm/CodeGen/TargetInstrInfo.h"
 #include "llvm/CodeGen/ISDOpcodes.h"
 #include "SVMRegisterInfo.h"
 #include "SVMMCTargetDesc.h"
@@ -50,10 +50,10 @@ public:
     explicit SVMInstrInfo();
     virtual const SVMRegisterInfo &getRegisterInfo() const { return RI; }
 
-    virtual unsigned isLoadFromStackSlot(const MachineInstr *MI,
+    virtual unsigned isLoadFromStackSlot(const MachineInstr &MI,
                                          int &FrameIndex) const;
 
-    virtual unsigned isStoreToStackSlot(const MachineInstr *MI,
+    virtual unsigned isStoreToStackSlot(const MachineInstr &MI,
                                         int &FrameIndex) const;
 
     virtual void storeRegToStackSlot(MachineBasicBlock &MBB,
@@ -69,8 +69,8 @@ public:
                                       const TargetRegisterInfo *TRI) const;
 
     virtual void copyPhysReg(MachineBasicBlock &MBB,
-                             MachineBasicBlock::iterator MBBI, DebugLoc DL,
-                             unsigned DestReg, unsigned SrcReg,
+                             MachineBasicBlock::iterator MBBI, const DebugLoc &DL,
+                             MCRegister DestReg, MCRegister SrcReg,
                              bool KillSrc) const;
 
     virtual bool AnalyzeBranch(MachineBasicBlock &MBB, MachineBasicBlock *&TBB,

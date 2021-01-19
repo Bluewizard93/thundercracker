@@ -27,7 +27,7 @@
 #ifndef SVM_SUBTARGET_H
 #define SVM_SUBTARGET_H
 
-#include "llvm/Target/TargetSubtargetInfo.h"
+#include "llvm/CodeGen/TargetSubtargetInfo.h"
 #include "llvm/Target/TargetMachine.h"
 #include <string>
 

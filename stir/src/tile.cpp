@@ -41,27 +41,25 @@
  * See: http://isthe.com/chongo/tech/comp/fnv/
  */
 namespace std {
-    namespace tr1 {
-        template<> struct hash<Stir::Tile::Identity> {
-            std::size_t operator()(Stir::Tile::Identity const &key) const {         
-                uint32_t h = 2166136261UL;
-                unsigned len = sizeof(key.pixels) / sizeof(uint32_t);
-                uint32_t *data = (uint32_t*) &key.pixels[0];
+    template<> struct hash<Stir::Tile::Identity> {
+        std::size_t operator()(Stir::Tile::Identity const &key) const {         
+            uint32_t h = 2166136261UL;
+            unsigned len = sizeof(key.pixels) / sizeof(uint32_t);
+            uint32_t *data = (uint32_t*) &key.pixels[0];
                 
-                do {
-                    h ^= *(data++);
-                    h *= 16777619UL;
-                } while (--len);
+            do {
+                h ^= *(data++);
+                h *= 16777619UL;
+            } while (--len);
                 
-                return h;
-            }
-        };
-    }
+            return h;
+        }
+    };
 }
 
 namespace Stir {
 
-std::tr1::unordered_map<Tile::Identity, TileRef> Tile::instances;
+std::unordered_map<Tile::Identity, TileRef> Tile::instances;
 
 Tile::Tile(const Identity &id)
     : mHasSobel(false), mHasDec4(false), mID(id)
@@ -73,7 +71,7 @@ TileRef Tile::instance(const Identity &id)
      * Return an existing Tile matching the given identity, or create a new one if necessary.
      */
      
-    std::tr1::unordered_map<Identity, TileRef>::iterator i = instances.find(id);
+    std::unordered_map<Identity, TileRef>::iterator i = instances.find(id);
         
     if (i == instances.end()) {
         TileRef tr(new Tile(id));
@@ -659,7 +657,7 @@ void TilePool::optimizeTiles(Logger &log)
      * in 'stackList' and 'stackIndex'.
      */
 
-    std::tr1::unordered_set<TileStack *> activeStacks;
+    std::unordered_set<TileStack *> activeStacks;
 
     stackList.clear();
     stackIndex.clear();
@@ -679,12 +677,12 @@ void TilePool::optimizeTiles(Logger &log)
 }
     
 void TilePool::optimizeTilesPass(Logger &log,
-                                 std::tr1::unordered_set<TileStack *> &activeStacks,
+                                 std::unordered_set<TileStack *> &activeStacks,
                                  bool gather, bool pinned)
 {
     // A single pass from the multi-pass optimizeTiles() algorithm
 
-    std::tr1::unordered_map<Tile *, TileStack *> memo;
+    std::unordered_map<Tile *, TileStack *> memo;
     
     for (Serial serial = 0; serial < tiles.size(); serial++) {
         TileRef tr = tiles[serial];
@@ -714,7 +712,7 @@ void TilePool::optimizeTilesPass(Logger &log,
                  * So in our case, two passes can be much faster than one. Yay.
                  */
 
-                std::tr1::unordered_map<Tile *, TileStack *>::iterator i = memo.find(&*tr);
+                std::unordered_map<Tile *, TileStack *>::iterator i = memo.find(&*tr);
                 if (i == memo.end()) {
                     c = closest(tr, tr->options().getMaxMSE());
                     memo[&*tr] = c;

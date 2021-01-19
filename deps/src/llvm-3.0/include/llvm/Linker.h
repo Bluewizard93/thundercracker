@@ -279,8 +279,8 @@ class Linker {
   /// @{
   private:
     /// Read in and parse the bitcode file named by FN and return the
-    /// Module it contains (wrapped in an auto_ptr), or 0 if an error occurs.
-    std::auto_ptr<Module> LoadObject(const sys::Path& FN);
+    /// Module it contains (wrapped in an unique_ptr), or 0 if an error occurs.
+    std::unique_ptr<Module> LoadObject(const sys::Path& FN);
 
     bool warning(StringRef message);
     bool error(StringRef message);

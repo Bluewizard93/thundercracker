@@ -25,12 +25,12 @@
  */
 
 #include "llvm/Pass.h"
-#include "llvm/Module.h"
-#include "llvm/Constants.h"
-#include "llvm/Type.h"
-#include "llvm/LLVMContext.h"
-#include "llvm/Instructions.h"
-#include "llvm/Attributes.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Constants.h"
+#include "llvm/IR/Type.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/Instructions.h"
+#include "llvm/IR/Attributes.h"
 using namespace llvm;
 
 namespace llvm {
@@ -46,7 +46,7 @@ namespace {
         
         virtual bool runOnModule(Module &M);
 
-        virtual const char *getPassName() const {
+        virtual llvm::StringRef getPassName() const {
             return "Inlining global constructors";
         }
         

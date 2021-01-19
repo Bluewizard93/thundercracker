@@ -72,7 +72,8 @@ src/Target/SVMGenCallingConv.inc: src/Target/SVM.td $(TABLEDEPS)
 	$(TABLEGEN) -gen-callingconv
 
 src/Target/SVMGenMCCodeEmitter.inc: src/Target/SVM.td $(TABLEDEPS)
-	$(TABLEGEN) -mc-emitter -gen-emitter
+	#$(TABLEGEN) -mc-emitter -gen-emitter
+	$(TABLEGEN) -gen-emitter
 
 src/Target/SVMRuntime.inc: $(SDK_INCLUDE)/sifteo/abi/syscall.h
 	python tools/svm-syscall-table.py < $< > $@

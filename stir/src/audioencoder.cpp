@@ -245,7 +245,7 @@ unsigned ADPCMEncoder::encodeSample(State &state, int sample)
         12635, 13899, 15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767
     };
 
-    static const int codeTable[16] = {
+    static const unsigned int codeTable[16] = {
         0xFFFFFF01,
         0xFFFFFF03,
         0xFFFFFF05,

@@ -34,20 +34,22 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "llvm/LLVMContext.h"
-#include "llvm/Module.h"
-#include "llvm/Linker.h"
-#include "llvm/PassManager.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/Module.h"
+#include "llvm/Linker/Linker.h"
+#include "llvm/IR/PassManager.h"
 #include "llvm/Pass.h"
 #include "llvm/ADT/Triple.h"
-#include "llvm/Support/IRReader.h"
+#include "llvm/IRReader/IRReader.h"
 #include "llvm/CodeGen/LinkAllAsmWriterComponents.h"
 #include "llvm/CodeGen/LinkAllCodegenComponents.h"
-#include "llvm/Config/config.h"
+#include "llvm/Config/llvm-config.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/FormattedStream.h"
 #include "llvm/Support/ManagedStatic.h"
+// RPS Added Path.h
+#include "llvm/Support/Path.h"
 #include "llvm/Support/PluginLoader.h"
 #include "llvm/Support/PrettyStackTrace.h"
 #include "llvm/Support/ToolOutputFile.h"
@@ -55,7 +57,7 @@
 #include "llvm/Support/Signals.h"
 #include "llvm/Support/TargetRegistry.h"
 #include "llvm/Support/TargetSelect.h"
-#include "llvm/Target/TargetData.h"
+#include "llvm/IR/DataLayout.h"
 #include "llvm/Target/TargetMachine.h"
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 #include "llvm/Transforms/IPO.h"
@@ -76,9 +78,9 @@ extern "C" void LLVMInitializeSVMTargetInfo();
 namespace llvm {
     ModulePass *createInlineGlobalCtorsPass();
     ModulePass *createMetadataCollectorPass();
-    BasicBlockPass *createEarlyLTIPass();
-    BasicBlockPass *createLateLTIPass();
-    BasicBlockPass *createMisalignStackPass();
+    BasicBlock *createEarlyLTIPass();
+    BasicBlock *createLateLTIPass();
+    BasicBlock *createMisalignStackPass();
     FunctionPass *createStaticAllocaPass();
 }
 
@@ -171,15 +173,16 @@ cl::opt<bool> NoVerify("disable-verify", cl::Hidden,
 static void PrepareModule(LLVMContext& Context, Module *M)
 {
     assert(SVMTargetMachine::isTargetCompatible(Context,
-        TargetData(SVMTargetMachine::getDataLayoutString())));
+        DataLayout(SVMTargetMachine::getDataLayoutString())));
     
     // See if the datalayout is at all compatible with SVM
-    TargetData TD(M);
+    DataLayout TD(M);
+    // TODO RPS changed DataLayout to DataLayoutString
     if (!SVMTargetMachine::isTargetCompatible(Context, TD)) {
         report_fatal_error("Module \"" + M->getModuleIdentifier() +
             "\" has incompatible target data layout. "
             "Your compiler may not be configured properly.\n"
-            "    Your module's data layout: " + M->getDataLayout() + "\n"
+            "    Your module's data layout: " + M->getDataLayoutStr() + "\n"
             "    Our preferred data layout: " +
             SVMTargetMachine::getDataLayoutString());
     }
@@ -189,13 +192,13 @@ static void PrepareModule(LLVMContext& Context, Module *M)
     M->setDataLayout(SVMTargetMachine::getDataLayoutString());
 }
 
-static std::auto_ptr<Module> LoadFile(const char *argv0,
+static std::unique_ptr<Module> LoadFile(const char *argv0,
     const std::string &FN, LLVMContext& Context)
 {
-    sys::Path Filename;
+    sys::path::filename Filename;
     if (!Filename.set(FN)) {
         errs() << "Invalid file name: '" << FN << "'\n";
-        return std::auto_ptr<Module>();
+        return std::unique_ptr<Module>();
     }
 
     SMDiagnostic Err;
@@ -207,31 +210,31 @@ static std::auto_ptr<Module> LoadFile(const char *argv0,
     Result = ParseIRFile(FNStr, Err, Context);
     if (Result) {
         PrepareModule(Context, Result);
-        return std::auto_ptr<Module>(Result);   // Load successful!
+        return std::unique_ptr<Module>(Result);   // Load successful!
     }
 
     Err.Print(argv0, errs());
-    return std::auto_ptr<Module>();
+    return std::unique_ptr<Module>();
 }
 
-static std::auto_ptr<Module> LoadInputs(const char *argv0, LLVMContext &Context)
+static std::unique_ptr<Module> LoadInputs(const char *argv0, LLVMContext &Context)
 {
     unsigned BaseArg = 0;
     std::string ErrorMessage;
 
-    std::auto_ptr<Module> Composite(LoadFile(argv0, InputFilenames[BaseArg], Context));
+    std::unique_ptr<Module> Composite(LoadFile(argv0, InputFilenames[BaseArg], Context));
     if (Composite.get() == 0) {
         errs() << argv0 << ": error loading file '"
              << InputFilenames[BaseArg] << "'\n";
-        return std::auto_ptr<Module>();
+        return std::unique_ptr<Module>();
     }
 
     for (unsigned i = BaseArg+1; i < InputFilenames.size(); ++i) {
-        std::auto_ptr<Module> M(LoadFile(argv0, InputFilenames[i], Context));
+        std::unique_ptr<Module> M(LoadFile(argv0, InputFilenames[i], Context));
     
         if (M.get() == 0) {
             errs() << argv0 << ": error loading file '" <<InputFilenames[i]<< "'\n";
-            return std::auto_ptr<Module>();
+            return std::unique_ptr<Module>();
         }
 
         if (Verbose)
@@ -241,7 +244,7 @@ static std::auto_ptr<Module> LoadInputs(const char *argv0, LLVMContext &Context)
             Linker::DestroySource, &ErrorMessage)) {
             errs() << argv0 << ": link error in '" << InputFilenames[i]
                 << "': " << ErrorMessage << "\n";
-            return std::auto_ptr<Module>();
+            return std::unique_ptr<Module>();
         }
     }
 
@@ -371,7 +374,7 @@ int main(int argc, char **argv)
     cl::ParseCommandLineOptions(argc, argv, HelpText);
     
     // Load and link the input modules
-    std::auto_ptr<Module> Composite = LoadInputs(argv[0], Context);
+    std::unique_ptr<Module> Composite = LoadInputs(argv[0], Context);
     if (!Composite.get())
         return 1;
     Module &mod = *Composite.get();
@@ -389,7 +392,7 @@ int main(int argc, char **argv)
         }
     }
 
-    std::auto_ptr<TargetMachine>
+    std::unique_ptr<TargetMachine>
         target(TheTarget->createTargetMachine(TheTriple.getTriple(),
             "", "", Reloc::Static, CodeModel::Default));
     assert(target.get() && "Could not allocate target machine!");
@@ -410,14 +413,14 @@ int main(int argc, char **argv)
     // Build passes
     PassManager PM;
     FunctionPassManager FPM(&mod);
-    FPM.add(new TargetData(*Target.getTargetData()));
+    FPM.add(new DataLayout(*Target.getTargetData()));
     AddPasses(PM, FPM, OLvl);
 
     // Override default to generate verbose assembly.
     Target.setAsmVerbosityDefault(true);
 
     // Target passes
-    PM.add(new TargetData(*Target.getTargetData()));
+    PM.add(new DataLayout(*Target.getTargetData()));
     OwningPtr<tool_output_file> Out(GetOutputStream());
     if (!Out)
         return 1;

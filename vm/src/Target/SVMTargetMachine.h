@@ -34,13 +34,13 @@
 #include "SVMSubtarget.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Target/TargetMachine.h"
-#include "llvm/Target/TargetData.h"
-#include "llvm/Target/TargetFrameLowering.h"
+#include "llvm/IR/DataLayout.h"
+#include "llvm/CodeGen/TargetFrameLowering.h"
 
 namespace llvm {
 
 class SVMTargetMachine : public LLVMTargetMachine {
-    const TargetData DataLayout;
+    const DataLayout DataLayout;
     SVMTargetLowering TLInfo;
     SVMSelectionDAGInfo TSInfo;
     SVMInstrInfo InstrInfo;
@@ -59,15 +59,15 @@ public:
     static uint32_t getRAMSize();
     static uint8_t getPaddingByte();
     static const char *getDataLayoutString();
-    static bool isTargetCompatible(LLVMContext& Context, const TargetData &TD);
+    static bool isTargetCompatible(LLVMContext& Context, const class DataLayout &TD);
 
     virtual const SVMInstrInfo *getInstrInfo() const { return &InstrInfo; }
     virtual const TargetFrameLowering  *getFrameLowering() const { return &FrameLowering; }
     virtual const SVMRegisterInfo *getRegisterInfo() const { return &InstrInfo.getRegisterInfo(); }
     virtual const SVMTargetLowering* getTargetLowering() const { return &TLInfo; }
     virtual const SVMSelectionDAGInfo* getSelectionDAGInfo() const { return &TSInfo; }
-    virtual const TargetData *getTargetData() const { return &DataLayout; }
-    virtual const SVMSubtarget *getSubtargetImpl() const { return &Subtarget; }
+    virtual const class DataLayout *getTargetData() const { return &DataLayout; }
+    virtual const TargetSubtargetInfo *getSubtargetImpl(const Function &) const { return nullptr; }
 
     virtual bool addInstSelector(PassManagerBase &PM, CodeGenOpt::Level OptLevel);
     virtual bool addPreEmitPass(PassManagerBase &PM, CodeGenOpt::Level OptLevel);

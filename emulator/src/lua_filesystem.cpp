@@ -354,7 +354,7 @@ int LuaFilesystem::volumePayload(lua_State *L)
 
     uint8_t *buffer = new uint8_t[span.sizeInBytes()];
     if (!span.copyBytes(0, buffer, span.sizeInBytes())) {
-        delete buffer;
+        delete[] buffer;
         FlashDevice::setStealthIO(-1);
         lua_pushfstring(L, "I/O error");
         lua_error(L);
@@ -363,7 +363,7 @@ int LuaFilesystem::volumePayload(lua_State *L)
 
     lua_pushlstring(L, (const char *)buffer, span.sizeInBytes());
     FlashDevice::setStealthIO(-1);
-    delete buffer;
+    delete[] buffer;
     return 1;
 }
 
@@ -411,7 +411,7 @@ int LuaFilesystem::rawRead(lua_State *L)
     FlashDevice::read(addr, buffer, size);
 
     lua_pushlstring(L, (const char *) buffer, size);
-    delete buffer;
+    delete[] buffer;
     return 1;
 }
 

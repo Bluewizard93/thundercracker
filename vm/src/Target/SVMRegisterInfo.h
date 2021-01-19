@@ -27,8 +27,9 @@
 #ifndef SVM_REGISTERINFO_H
 #define SVM_REGISTERINFO_H
 
-#include "llvm/Target/TargetRegisterInfo.h"
+#include "llvm/CodeGen/TargetRegisterInfo.h"
 #include "llvm/ADT/BitVector.h"
+#include "llvm/CodeGen/Register.h"
 
 #define GET_REGINFO_HEADER
 #include "SVMGenRegisterInfo.inc"
@@ -43,11 +44,11 @@ struct SVMRegisterInfo : public SVMGenRegisterInfo {
 
     SVMRegisterInfo(const TargetInstrInfo &tii);
     
-    virtual const unsigned int *getCalleeSavedRegs(const MachineFunction *MF = 0) const;
+    virtual const unsigned short *getCalleeSavedRegs(const MachineFunction *MF = 0) const;
     virtual BitVector getReservedRegs(const MachineFunction &MF) const;
     virtual void eliminateFrameIndex(MachineBasicBlock::iterator II,
-        int SPAdj, RegScavenger *RS = NULL) const;
-    virtual unsigned int getFrameRegister(const MachineFunction &MF) const;
+        int SPAdj, unsigned FIOperandNum, RegScavenger *RS = NULL) const;
+    virtual Register getFrameRegister(const MachineFunction &MF) const;
 
 private:
     void rewriteLongStackOp(MachineBasicBlock::iterator &II, uint32_t Op,

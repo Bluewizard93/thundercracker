@@ -27,6 +27,7 @@
 #include "llvm/Pass.h"
 #include "llvm/PassRegistry.h"
 #include "llvm/ADT/SmallVector.h"
+#include "llvm/ADT/StringRef.h"
 #include <utility>
 #include <map>
 using namespace llvm;
@@ -47,7 +48,7 @@ public:
 
     virtual bool runOnModule(Module &M);
 
-    virtual const char *getPassName() const {
+    virtual StringRef getPassName() const {
         return "UUID generator pass";
     }
 
